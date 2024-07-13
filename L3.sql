@@ -85,5 +85,47 @@ from
   ) base_rank
 where streak_rank = 1
 or date = '2024-07-12'
+;
 
+-- L3_profile_score
+CREATE OR REPLACE table intellilens.L3_profile_score AS
+SELECT
+  count(distinct profile_id) AS number_profile
+, avg(date_diff('2024-07-12', profile_last_logged_in_date, DAY)) AS days_since_last_login
+, avg(date_diff('2024-07-12', profile_creation_date, DAY)) AS days_since_profile_creation
+, avg(profile_posts) AS profile_posts
+, avg(profile_comments) AS profile_comments
+, avg(profile_mirrors) AS profile_mirrors
+, avg(profile_quotes) AS profile_quotes
+, avg(profile_publications) AS profile_publications
+, avg(profile_reacted) AS profile_reacted
+, avg(profile_reactions) AS profile_reactions
+, avg(profile_collects) AS profile_collects
+, avg(profile_acted) AS profile_acted
+, avg(profile_followers) AS profile_followers
+, avg(profile_following) AS profile_following
+, case  when score < 1000 then '0 - 1000'
+		when score >= 1000 and score < 2000 then '1000 - 2000'
+		when score >= 2000 and score < 3000 then '2000 - 3000'
+		when score >= 3000 and score < 4000 then '3000 - 4000'
+		when score >= 4000 and score < 5000 then '4000 - 5000'
+		when score >= 5000 and score < 6000 then '5000 - 6000'
+		when score >= 6000 and score < 7000 then '6000 - 7000'
+		when score >= 7000 and score < 8000 then '7000 - 8000'
+		when score >= 8000 and score < 9000 then '8000 - 9000'
+		when score >= 9000 and score < 10000 then '9000 - 10000' 
+		else 'unknown' end as score1000
+FROM intellilens.L2_profile
+-- where profile_id IN ('0x0f85', '0x017566')
+GROUP BY case  when score < 1000 then '0 - 1000'
+		when score >= 1000 and score < 2000 then '1000 - 2000'
+		when score >= 2000 and score < 3000 then '2000 - 3000'
+		when score >= 3000 and score < 4000 then '3000 - 4000'
+		when score >= 4000 and score < 5000 then '4000 - 5000'
+		when score >= 5000 and score < 6000 then '5000 - 6000'
+		when score >= 6000 and score < 7000 then '6000 - 7000'
+		when score >= 7000 and score < 8000 then '7000 - 8000'
+		when score >= 8000 and score < 9000 then '8000 - 9000'
+		when score >= 9000 and score < 10000 then '9000 - 10000' 
+		else 'unknown' end 
 
