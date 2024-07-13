@@ -1,6 +1,4 @@
-
--- lenstreak 
-
+-- prep -----------------------------------------------------
 -- interaction (without posts)
 select d.date, p.profile_id
 from `intellilens.L2_date` d
@@ -46,10 +44,11 @@ and pu.profile_id is null
 order by p.profile_id, d.date desc
 ;
 
--- L3_streaks
+
+-- L3_streaks -----------------------------------------------------
 -- maybe exclude all profiles with < 10 publications.
 
-CREATE TABLE intellilens.L3_streaks AS
+CREATE OR REPLACE TABLE intellilens.L3_streaks AS
 SELECT 
   base_rank.*
 FROM
@@ -93,7 +92,9 @@ where streak_rank = 1
 or date = '2024-07-12'
 ;
 
--- L3_profile_score
+
+-- L3_profile_score -----------------------------------------------------
+
 CREATE OR REPLACE table intellilens.L3_profile_score AS
 SELECT
   count(distinct profile_id) AS number_profile
@@ -122,7 +123,6 @@ SELECT
 		when score >= 9000 and score < 10000 then '9000 - 10000' 
 		else 'unknown' end as score1000
 FROM intellilens.L2_profile
--- where profile_id IN ('0x0f85', '0x017566')
 GROUP BY case  when score < 1000 then '0 - 1000'
 		when score >= 1000 and score < 2000 then '1000 - 2000'
 		when score >= 2000 and score < 3000 then '2000 - 3000'
