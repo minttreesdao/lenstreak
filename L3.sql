@@ -92,6 +92,53 @@ where streak_rank = 1
 or date = '2024-07-12'
 ;
 
+-- L3_streaks collect
+CREATE TABLE intellilens.L3_streaks_collect AS
+SELECT 
+  base_rank.*
+FROM
+  (
+  SELECT 
+    base.*
+  , RANK() OVER (PARTITION BY profile_id ORDER BY streak DESC, base.date DESC) as streak_rank
+  from
+    (
+    select 
+      b.date
+    , profile_id
+    , lead(b.date) over (partition by profile_id order by b.date desc) as date_before
+    , date_diff(b.date, lead(b.date) over (partition by profile_id order by b.date desc), day) as streak
+    FROM
+    (
+      SELECT
+        d.date
+      , p.profile_id
+      , COALESCE(pu.profile_id, i.profile_id) AS profile_interaction
+      from `intellilens.L2_date` d
+      left join `intellilens.L2_profile` p
+      on 1 = 1
+      left join `intellilens.L2_publication` pu
+      on pu.publication_date = d.date
+      and pu.profile_id = p.profile_id
+      and pu.publication_type = 'POST'
+      and pu.publication_date < '2024-07-12'
+
+      left join `intellilens.L2_interaction` i
+      on i.interaction_date = d.date
+      and i.interaction_profile_id = p.profile_id
+      and i.interaction_date < '2024-07-12'
+
+      where d.date <= '2024-07-12' -- day after last publication date (-> end date)
+      and d.date >= '2022-05-16' -- day before first publication date (-> start date)
+    ) b
+    WHERE profile_interaction IS NULL
+    ) base
+    where base.date <> base.date_before
+  ) base_rank
+where streak_rank = 1
+or date = '2024-07-12'
+;
+
 
 -- L3_profile_score -----------------------------------------------------
 
